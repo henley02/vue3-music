@@ -6,7 +6,6 @@ const Base64 = require('js-base64').Base64
  * 获取签名方法
  */
 const getSecuritySign = require('./sign')
-console.log(1231)
 const ERR_OK = 0
 const token = 5381
 

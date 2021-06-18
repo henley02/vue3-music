@@ -34,6 +34,14 @@ const routes = [
     ]
   },
   {
+    path: '/singerDetail/:mid',
+    name: 'SingerDetail',
+    meta: {
+      title: '歌手详情'
+    },
+    component: () => import('../views/SingerDetail/SingerDetail.vue')
+  },
+  {
     path: '/user',
     name: 'User',
     component: () => import('../views/User/User.vue')

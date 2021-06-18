@@ -1,0 +1,1 @@
+export const SINGER_KEY = 'CURRENT_SINGER'

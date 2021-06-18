@@ -40,7 +40,7 @@ export default defineComponent({
     return {
       sliders: [],
       albums: [],
-      title: 12
+      title: '正在加载...'
     }
   },
   computed: {
