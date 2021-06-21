@@ -5,17 +5,23 @@
     </div>
     <h1 class="title">{{ title }}</h1>
     <div class="bg-image" :style="bgImageStyle" ref="bgImg">
-      <div class="play-btn-wrapper">
-        <div class="play-btn">
+      <div class="play-btn-wrapper" :style="playBtnStyle">
+        <div class="play-btn" v-show="songs.length>0" @click="random()">
           <i class="icon-play"></i>
           <span class="text">随机播放全部</span>
         </div>
       </div>
       <div class="filter" :style="filterStyle"></div>
     </div>
-    <Scroll class="list" :style="scrollStyle" v-loading="loading" :probe-type="3" @scroll="onscroll">
+    <Scroll
+      class="list"
+      :style="scrollStyle"
+      v-loading="loading"
+      :probe-type="3"
+      @scroll="onscroll"
+      v-none-data:[noResultText]="noData">
       <div class="song-list-wrapper">
-        <song-list :list="songs"/>
+        <song-list :list="songs" @select="selectItem"/>
       </div>
     </Scroll>
   </div>
@@ -25,6 +31,7 @@
 import Scroll from '@/components/Scroll/Scroll'
 import SongList from '@/components/SongList/SongList'
 import { useRouter } from 'vue-router'
+import { mapActions } from 'vuex'
 
 const RESERVED_HEIGHT = 40
 
@@ -58,6 +65,18 @@ export default {
     }
   },
   computed: {
+    noData () {
+      return !this.loading && !this.songs.length
+    },
+    playBtnStyle () {
+      let display = ''
+      if (this.scrollY >= this.maxTranslateY) {
+        display = 'none'
+      }
+      return {
+        display
+      }
+    },
     bgImageStyle () {
       const scrollY = this.scrollY
       let paddingTop = '70%'
@@ -109,8 +128,18 @@ export default {
     }
   },
   methods: {
+    ...mapActions(['song/selectPlay', 'song/randomPlay']),
+    selectItem (item, index) {
+      this['song/selectPlay']({
+        list: this.songs,
+        index: index
+      })
+    },
     onscroll (pos) {
       this.scrollY = -pos.y
+    },
+    random () {
+      this['song/randomPlay']({ list: this.songs })
     }
   },
   mounted () {

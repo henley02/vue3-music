@@ -1,7 +1,9 @@
 <template>
-  <m-header/>
-  <Tab/>
-  <router-view/>
+  <div>
+    <m-header/>
+    <Tab/>
+    <router-view/>
+  </div>
 </template>
 
 <script lang="ts">

@@ -1,14 +1,15 @@
 import { createApp } from 'vue'
-import Loading from '@/components/Loading/Loading'
+import NoneData from '@/components/NoneData/NoneData'
+
 import { addClass, removeClass } from '@/js/dom'
 
 const relativeClass = 'g-relative'
 
-const loadingDirective = {
+const noneDataDirective = {
   mounted (el, binding) {
-    const app = createApp(Loading)
+    const app = createApp(NoneData)
     const instance = app.mount(document.createElement('div'))
-    const name = Loading.name
+    const name = NoneData.name
     if (!el[name]) {
       el[name] = {}
     }
@@ -23,7 +24,7 @@ const loadingDirective = {
   },
   updated (el, binding) {
     const title = binding.arg
-    const name = Loading.name
+    const name = NoneData.name
     if (typeof title !== 'undefined') {
       el[name].instance.setTitle(title)
     }
@@ -34,18 +35,18 @@ const loadingDirective = {
 }
 
 function remove (el) {
-  const name = Loading.name
   removeClass(el, relativeClass)
+  const name = NoneData.name
   el.removeChild(el[name].instance.$el)
 }
 
 function append (el) {
-  const name = Loading.name
   const style = getComputedStyle(el)
+  const name = NoneData.name
   if (['absolute', 'fixed', 'relative'].indexOf(style.position) === -1) {
     addClass(el, relativeClass)
   }
   el.appendChild(el[name].instance.$el)
 }
 
-export default loadingDirective
+export default noneDataDirective

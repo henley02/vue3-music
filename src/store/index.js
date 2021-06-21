@@ -1,13 +1,16 @@
-import Vuex from 'vuex'
+import { createStore, createLogger } from 'vuex'
 
-import singer from '@/store/modules/singer'
 import getters from './getters'
+import singer from '@/store/modules/singer'
+import song from '@/store/modules/song'
 
-const store = new Vuex.Store({
+const debug = process.env.NODE_ENV !== 'production'
+export default createStore({
   modules: {
-    singer
+    singer,
+    song
   },
-  getters
+  getters,
+  strict: debug,
+  plugins: debug ? [createLogger()] : []
 })
-
-export default store

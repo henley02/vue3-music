@@ -11,7 +11,9 @@ import { useStore } from 'vuex'
 
 export default {
   name: 'SingerDetail',
-  components: { MusicList },
+  components: {
+    MusicList
+  },
   data () {
     return {
       songs: [],
@@ -24,11 +26,13 @@ export default {
       let mid = []
       if (res.songs.length) {
         mid = res.songs.map(item => item.mid)
+
+        const { map } = await FetchSongsUrl({ mid: mid })
+        res.songs.forEach(item => {
+          item.url = map[item.mid]
+        })
       }
-      const { map } = await FetchSongsUrl({ mid: mid })
-      res.songs.forEach(item => {
-        item.url = map[item.mid]
-      })
+
       this.loading = false
       this.songs = res.songs.filter(item => item.url.indexOf('vkey') > -1)
     }
