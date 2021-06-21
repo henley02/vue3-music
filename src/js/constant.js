@@ -2,7 +2,7 @@ export const SINGER_KEY = 'CURRENT_SINGER'
 
 /**
  * 播放模式
- * @type {{sequence: number, loop: number, room: number}}
+ * @type {{sequence: number, loop: number, random: number}}
  */
 export const PLAY_MODE = {
   sequence: 0, // 顺序

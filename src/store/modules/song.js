@@ -50,7 +50,13 @@ const mutations = {
 }
 
 const actions = {
-  selectPlay ({ commit, state }, { list, index }) {
+  selectPlay ({
+    commit,
+    state
+  }, {
+    list,
+    index
+  }) {
     commit('SET_PLAY_MODE', PLAY_MODE.sequence)
     commit('SET_SEQUENCE_LIST', list)
     commit('SET_PLAYING_STATE', true)
@@ -65,6 +71,22 @@ const actions = {
     commit('SET_FULL_SCREEN', true)
     commit('SET_PLAY_LIST', shuffle(list))
     commit('SET_CURRENT_INDEX', 0)
+  },
+  changeMode ({
+    commit,
+    state,
+    getters
+  }, mode) {
+    console.log(getters)
+    const current = getters.currentSong.id
+    if (mode === PLAY_MODE.random) {
+      commit('SET_PLAY_LIST', shuffle(state.sequenceList))
+    } else {
+      commit('SET_PLAY_LIST', state.sequenceList)
+    }
+    const index = state.playList.findIndex(song => song.id === current)
+    commit('SET_CURRENT_INDEX', index)
+    commit('SET_PLAY_MODE', mode)
   }
 }
 
