@@ -1,5 +1,7 @@
 export const SINGER_KEY = 'CURRENT_SINGER'
 
+export const FAVORITE_KEY = '__favorite__'
+
 /**
  * 播放模式
  * @type {{sequence: number, loop: number, random: number}}

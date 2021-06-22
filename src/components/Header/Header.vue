@@ -9,11 +9,11 @@
 </template>
 
 <script lang="ts">
-import { defineComponent } from 'vue'
+import { defineComponent } from 'vue';
 
 export default defineComponent({
-  name: 'Header'
-})
+  name: 'Header',
+});
 </script>
 
 <style scoped lang="scss">
@@ -50,9 +50,8 @@ export default defineComponent({
       display: block;
       padding: 12px;
       font-size: $font-size-large-x;
-      color: $color-theme
+      color: $color-theme;
     }
   }
 }
-
 </style>

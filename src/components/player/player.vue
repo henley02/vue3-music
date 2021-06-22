@@ -2,7 +2,7 @@
   <div class="player" v-show="playList.length">
     <div class="normal-player" v-show="fullScreen">
       <div class="background">
-        <img :src="currentSong.pic"/>
+        <img :src="currentSong.pic" />
       </div>
       <div class="top">
         <div class="back" @click="goBack()">
@@ -15,7 +15,7 @@
         <div class="middle-l">
           <div class="cd-wrapper">
             <div class="cd">
-              <img :src="currentSong.pic" alt="" class="image">
+              <img :src="currentSong.pic" alt="" class="image" />
             </div>
           </div>
           <div class="playing-lyric-wrapper">
@@ -32,13 +32,22 @@
       </div>
       <div class="bottom">
         <div class="dot-wrapper">
-          <span class="dot" :class="{'active':current==='cd'}"></span>
-          <span class="dot" :class="{'active':current==='lyric'}"></span>
+          <span class="dot" :class="{ active: current === 'cd' }"></span>
+          <span class="dot" :class="{ active: current === 'lyric' }"></span>
         </div>
         <div class="progress-wrapper">
-          <span class="time time-l"></span>
-          <div class="progress-bar-wrapper"></div>
-          <span class="time time-r"></span>
+          <span class="time time-l">{{ formatTime(currentTime) }}</span>
+          <div class="progress-bar-wrapper">
+            <progress-bar
+              ref="barRef"
+              :progress="progress"
+              @progress-changing="onProgressChanging"
+              @progress-changed="onProgressChanged"
+            />
+          </div>
+          <span class="time time-r">{{
+            formatTime(currentSong.duration)
+          }}</span>
         </div>
         <div class="operators">
           <div class="icon i-left">
@@ -54,7 +63,10 @@
             <i @click="next" class="icon-next"></i>
           </div>
           <div class="icon i-right">
-            <i @click="changeMode" class="icon-not-favorite"></i>
+            <i
+              @click="toggleFavorite(currentSong)"
+              :class="getFavoriteIcon(currentSong)"
+            ></i>
           </div>
         </div>
       </div>
@@ -64,125 +76,161 @@
       @pause="pause"
       @canplay="ready"
       @error="error"
+      @timeupdate="updateTime"
+      @ended="end"
     />
   </div>
 </template>
 
 <script lang="ts">
-import { defineComponent, computed, watch, ref } from 'vue'
-import { useStore } from 'vuex'
-import Scroll from '@/components/Scroll/Scroll'
-import useMode from './use-mode'
+import { defineComponent, computed, watch, ref } from 'vue';
+import { useStore } from 'vuex';
+import Scroll from '@/components/Scroll/Scroll';
+import useMode from './use-mode';
+import useFavorite from './use-favorite';
+import { PLAY_MODE } from '@/js/constant';
+import { formatTime } from '@/js/util';
+import ProgressBar from './progress-bar.vue';
 
 export default defineComponent({
   name: 'player',
-  components: { Scroll },
-  computed: {},
-  setup () {
-    const audioRef = ref(null)
-    const current = ref('cd')
-    const songReady = ref(false)
-    const playingLyric = ''
+  components: { ProgressBar, Scroll },
+  setup() {
+    const audioRef = ref(null);
+    const current = ref('cd');
+    const songReady = ref(false);
+    const currentTime = ref(0);
+    const playingLyric = '';
+    // 判断是否在拖动中
+    let progressChange = false;
 
-    const store = useStore()
-    const fullScreen = computed(() => store.state.song.fullScreen)
-    const playList = computed(() => store.state.song.playList)
-    const currentSong = computed(() => store.getters.currentSong)
-    const playing = computed(() => store.state.song.playing)
-    const currentIndex = computed(() => store.state.song.currentIndex)
+    const store = useStore();
+    const fullScreen = computed(() => store.state.song.fullScreen);
+    const playList = computed(() => store.state.song.playList);
+    const currentSong = computed(() => store.getters.currentSong);
+    const playing = computed(() => store.state.song.playing);
+    const currentIndex = computed(() => store.state.song.currentIndex);
+    const playMode = computed(() => store.state.song.playMode);
 
-    const { modeIcon, changeMode } = useMode()
+    const { modeIcon, changeMode } = useMode();
+    const { toggleFavorite, getFavoriteIcon } = useFavorite();
 
     const playIcon = computed(() => {
-      return playing.value ? 'icon-pause' : 'icon-play'
-    })
+      return playing.value ? 'icon-pause' : 'icon-play';
+    });
 
     const disableCls = computed(() => {
-      return songReady.value ? '' : 'disable'
-    })
+      return songReady.value ? '' : 'disable';
+    });
 
+    const progress = computed(
+      () => currentTime.value / currentSong.value.duration
+    );
     /**
      * 监听当前歌曲的变化
      */
     watch(currentSong, (newSong) => {
       if (!newSong.id || !newSong.url) {
-        return
+        return;
       }
-      songReady.value = false
-      const audioEl = audioRef.value
-      audioEl.src = newSong.url
-      audioEl.play()
-    })
+      currentTime.value = 0;
+      songReady.value = false;
+      const audioEl = audioRef.value;
+      audioEl.src = newSong.url;
+      audioEl.play();
+    });
 
     /**
      * 监听播放状态的变化
      */
     watch(playing, (newPlaying) => {
       if (!songReady.value) {
-        return
+        return;
       }
-      const audioEl = audioRef.value
-      newPlaying ? audioEl.play() : audioEl.pause()
-    })
+      const audioEl = audioRef.value;
+      newPlaying ? audioEl.play() : audioEl.pause();
+    });
 
-    function goBack () {
-      store.commit('song/SET_FULL_SCREEN', false)
+    function goBack() {
+      store.commit('song/SET_FULL_SCREEN', false);
     }
 
-    function togglePlay () {
-      if (!songReady.value) return
-      store.commit('song/SET_PLAYING_STATE', !playing.value)
+    function togglePlay() {
+      if (!songReady.value) return;
+      store.commit('song/SET_PLAYING_STATE', !playing.value);
     }
 
     /**
      * 非人为触发暂停
      */
-    function pause () {
-      store.commit('song/SET_PLAYING_STATE', false)
+    function pause() {
+      store.commit('song/SET_PLAYING_STATE', false);
     }
 
     /**
      *该视频已准备好开始播放
      */
-    function ready () {
-      if (songReady.value) return
-      songReady.value = true
+    function ready() {
+      if (songReady.value) return;
+      songReady.value = true;
     }
 
     /**
      * 返回表示音频错误状态的 MediaError 对象
      */
-    function error () {
-      songReady.value = true
+    function error() {
+      songReady.value = true;
+    }
+
+    /**
+     * 播放时，更新时间
+     */
+    function updateTime(e) {
+      if (!progressChange) {
+        currentTime.value = e.target.currentTime;
+      }
+    }
+
+    /**
+     * 播放结束
+     */
+    function end() {
+      currentTime.value = 0;
+      if (playMode.value === PLAY_MODE.loop) {
+        loop();
+      } else {
+        next();
+      }
     }
 
     /**
      * 如果只有一首歌曲,循环播放当前歌曲
      */
-    function loop () {
-      const audioEl = audioRef.value
-      audioEl.currentTime = 0
-      audioEl.play()
+    function loop() {
+      const audioEl = audioRef.value;
+      audioEl.currentTime = 0;
+      audioEl.play();
+      store.commit('song/SET_PLAYING_STATE', true);
     }
 
     /**
      * 上一首
      */
-    function prev () {
-      const list = playList.value
+    function prev() {
+      const list = playList.value;
       if (!songReady.value || !list.length) {
-        return
+        return;
       }
       if (list.length === 1) {
-        loop()
+        loop();
       } else {
-        let index = currentIndex.value - 1
+        let index = currentIndex.value - 1;
         if (index === -1) {
-          index = list.length - 1
+          index = list.length - 1;
         }
-        store.commit('song/SET_CURRENT_INDEX', index)
+        store.commit('song/SET_CURRENT_INDEX', index);
         if (!playing.value) {
-          store.commit('song/SET_PLAYING_STATE', true)
+          store.commit('song/SET_PLAYING_STATE', true);
         }
       }
     }
@@ -190,22 +238,36 @@ export default defineComponent({
     /**
      * 下一首
      */
-    function next () {
-      const list = playList.value
+    function next() {
+      const list = playList.value;
       if (!songReady.value || !list.length) {
-        return
+        return;
       }
       if (list.length === 1) {
-        loop()
+        loop();
       } else {
-        let index = currentIndex.value + 1
+        let index = currentIndex.value + 1;
         if (index === list.length) {
-          index = 0
+          index = 0;
         }
-        store.commit('song/SET_CURRENT_INDEX', index)
+        store.commit('song/SET_CURRENT_INDEX', index);
         if (!playing.value) {
-          store.commit('song/SET_PLAYING_STATE', true)
+          store.commit('song/SET_PLAYING_STATE', true);
         }
+      }
+    }
+
+    function onProgressChanging(progress) {
+      progressChange = true;
+      currentTime.value = currentSong.value.duration * progress;
+    }
+
+    function onProgressChanged(progress) {
+      progressChange = false;
+      audioRef.value.currentTime = currentTime.value =
+        currentSong.value.duration * progress;
+      if (!playing.value) {
+        store.commit('song/SET_PLAYING_STATE', true);
       }
     }
 
@@ -218,21 +280,31 @@ export default defineComponent({
       current,
       playIcon,
       disableCls,
+      currentTime,
+      progress,
 
       goBack,
 
       togglePlay,
       pause,
       ready,
+      updateTime,
+      end,
       error,
       prev,
       next,
+      onProgressChanging,
+      onProgressChanged,
+      formatTime,
 
       modeIcon,
-      changeMode
-    }
-  }
-})
+      changeMode,
+
+      getFavoriteIcon,
+      toggleFavorite,
+    };
+  },
+});
 </script>
 <style scoped lang="scss">
 .player {
@@ -300,13 +372,40 @@ export default defineComponent({
   }
 
   .middle {
-
   }
 
   .bottom {
     position: absolute;
     bottom: 50px;
     width: 100%;
+
+    .progress-wrapper {
+      display: flex;
+      align-items: center;
+      width: 80%;
+      margin: 0 auto;
+      padding: 10px 0;
+
+      .time {
+        color: $color-text;
+        font-size: $font-size-small;
+        flex: 0 0 40px;
+        line-height: 30px;
+        width: 40px;
+
+        &.time-l {
+          text-align: left;
+        }
+
+        &.time-r {
+          text-align: right;
+        }
+      }
+
+      .progress-bar-wrapper {
+        flex: 1;
+      }
+    }
 
     .operators {
       display: flex;
