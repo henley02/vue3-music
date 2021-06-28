@@ -55,6 +55,14 @@ const mutations = {
   SET_FAVORITE_LIST(state, list) {
     state.favoriteList = list;
   },
+  ADD_SONG_LYRIC(state, { song, lyric }) {
+    state.sequenceList.map((item) => {
+      if (item.mid === song.mid) {
+        item.lyric = lyric;
+      }
+      return item;
+    });
+  },
 };
 
 const actions = {
