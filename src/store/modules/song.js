@@ -93,7 +93,39 @@ const actions = {
     commit('SET_CURRENT_INDEX', index);
     commit('SET_PLAY_MODE', mode);
   },
+  removeSong({ commit, state }, song) {
+    const sequenceList = state.sequenceList.slice();
+    const playList = state.playList.slice();
+    const sequenceIndex = findIndex(sequenceList, song);
+    const playIndex = findIndex(playList, song);
+    if (playIndex < 0) {
+      return;
+    }
+    let currentIndex = state.currentIndex;
+    sequenceList.splice(sequenceIndex, 1);
+    playList.splice(playIndex, 1);
+    // 删除的是前面一首歌
+    if (playIndex < currentIndex || currentIndex === playList.length) {
+      currentIndex--;
+    }
+    commit('SET_SEQUENCE_LIST', sequenceList);
+    commit('SET_CURRENT_INDEX', currentIndex);
+    commit('SET_PLAY_LIST', playList);
+    if (!playList.length) {
+      commit('SET_PLAYING_STATE', false);
+    }
+  },
+  clearSongList({ commit }) {
+    commit('SET_SEQUENCE_LIST', []);
+    commit('SET_CURRENT_INDEX', 0);
+    commit('SET_PLAY_LIST', []);
+    commit('SET_PLAYING_STATE', false);
+  },
 };
+
+function findIndex(list, song) {
+  return list.findIndex((item) => item.id === song.id);
+}
 
 export default {
   namespaced: true,

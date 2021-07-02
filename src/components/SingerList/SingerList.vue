@@ -1,11 +1,16 @@
 <template>
   <Scroll class="index-list" :probe-type="3" @scroll="onScroll" ref="scrollRef">
     <ul ref="groupRef">
-      <li class="group" v-for="(group,groupIndex) in list" :key="groupIndex">
+      <li class="group" v-for="(group, groupIndex) in list" :key="groupIndex">
         <h2 class="title">{{ group.title }}</h2>
         <ul>
-          <li class="item" v-for="(item,index) in group.list" :key="index" @click="handleClick(item)">
-            <img v-lazy="item.pic" class="avatar"/>
+          <li
+            class="item"
+            v-for="(item, index) in group.list"
+            :key="index"
+            @click="handleClick(item)"
+          >
+            <img v-lazy="item.pic" class="avatar" />
             <span class="name">{{ item.name }}</span>
           </li>
         </ul>
@@ -14,17 +19,20 @@
     <div class="fixed" v-show="fixedTitle" :style="fixedStyle">
       <div class="fixed-title">{{ fixedTitle }}</div>
     </div>
-    <div class="shortcut"
-         @touchstart.stop.prevent="onShortcutTouchStart"
-         @touchmove.stop.prevent="onShortcutTouchMove"
-         @touchend.stop>
+    <div
+      class="shortcut"
+      @touchstart.stop.prevent="onShortcutTouchStart"
+      @touchmove.stop.prevent="onShortcutTouchMove"
+      @touchend.stop
+    >
       <ul>
         <li
           class="item"
-          v-for="(item,index) in shortcutList"
+          v-for="(item, index) in shortcutList"
           :key="index"
-          :class="{'active':currentIndex===index}"
-          :data-index="index">
+          :class="{ active: currentIndex === index }"
+          :data-index="index"
+        >
           {{ item }}
         </li>
       </ul>
@@ -33,28 +41,34 @@
 </template>
 
 <script lang="ts">
-import { defineComponent } from 'vue'
-import Scroll from '../Scroll/Scroll.vue'
-import useFixed from '../SingerList/useFixed'
-import useShortcut from '../SingerList/useShortcut'
+import { defineComponent } from 'vue';
+import Scroll from '@/components/wrap-scroll';
+import useFixed from '../SingerList/useFixed';
+import useShortcut from '../SingerList/useShortcut';
 
 export default defineComponent({
   components: { Scroll },
   props: {
     list: {
       type: Array,
-      default: () => []
-    }
+      default: () => [],
+    },
   },
   name: 'SingerList',
   emits: ['select'],
-  setup (props, { emit }) {
-    const { groupRef, onScroll, fixedTitle, fixedStyle, currentIndex } = useFixed(props)
-    const { shortcutList, onShortcutTouchStart, onShortcutTouchMove, scrollRef } = useShortcut(props, groupRef)
+  setup(props, { emit }) {
+    const { groupRef, onScroll, fixedTitle, fixedStyle, currentIndex } =
+      useFixed(props);
+    const {
+      shortcutList,
+      onShortcutTouchStart,
+      onShortcutTouchMove,
+      scrollRef,
+    } = useShortcut(props, groupRef);
 
     const handleClick = (item) => {
-      emit('select', item)
-    }
+      emit('select', item);
+    };
 
     return {
       scrollRef,
@@ -66,10 +80,10 @@ export default defineComponent({
       currentIndex,
       onShortcutTouchStart,
       onShortcutTouchMove,
-      handleClick
-    }
-  }
-})
+      handleClick,
+    };
+  },
+});
 </script>
 <style scoped lang="scss">
 .index-list {
@@ -144,7 +158,7 @@ export default defineComponent({
       font-size: $font-size-small;
 
       &.active {
-        color: $color-theme
+        color: $color-theme;
       }
     }
   }

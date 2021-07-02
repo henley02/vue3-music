@@ -198,6 +198,7 @@ export default defineComponent({
       const audioEl = audioRef.value;
       audioEl.src = newSong.url;
       audioEl.play();
+      store.commit('song/SET_PLAYING_STATE', true);
     });
 
     /**
@@ -303,9 +304,6 @@ export default defineComponent({
           index = list.length - 1;
         }
         store.commit('song/SET_CURRENT_INDEX', index);
-        if (!playing.value) {
-          store.commit('song/SET_PLAYING_STATE', true);
-        }
       }
     }
 
@@ -325,9 +323,6 @@ export default defineComponent({
           index = 0;
         }
         store.commit('song/SET_CURRENT_INDEX', index);
-        if (!playing.value) {
-          store.commit('song/SET_PLAYING_STATE', true);
-        }
       }
     }
 

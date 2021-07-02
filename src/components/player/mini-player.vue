@@ -33,7 +33,7 @@
           ></i>
         </progress-circle>
       </div>
-      <div class="control">
+      <div class="control" @click.stop="showPlaylist">
         <i class="icon-playlist"></i>
       </div>
       <play-list ref="playlistRef" />
@@ -42,7 +42,7 @@
 </template>
 
 <script lang="ts">
-import { computed, defineComponent } from 'vue';
+import { computed, defineComponent, ref } from 'vue';
 import { useStore } from 'vuex';
 import useCd from './use-cd';
 import useMiniSlider from './use-mini-slider';
@@ -60,6 +60,7 @@ export default defineComponent({
   },
   emits: ['togglePlay'],
   setup(props, { emit }) {
+    const playlistRef = ref(null);
     const store = useStore();
     const { cdCls, cdRef, cdImageRef } = useCd();
     const { sliderWrapperRef } = useMiniSlider();
@@ -73,6 +74,9 @@ export default defineComponent({
       return playing.value ? 'icon-pause-mini' : 'icon-play-mini';
     });
 
+    function showPlaylist() {
+      playlistRef.value.show();
+    }
     function showNormalPlayer() {
       store.commit('song/SET_FULL_SCREEN', true);
     }
@@ -81,6 +85,9 @@ export default defineComponent({
     }
 
     return {
+      playlistRef,
+      showPlaylist,
+
       currentSong,
       playList,
       fullScreen,

@@ -36,13 +36,12 @@ export default function useMiniSlider() {
               loop: true,
             },
           });
+          sliderVal.on('slidePageChanged', ({ pageX }) => {
+            store.commit('song/SET_CURRENT_INDEX', pageX);
+          });
         } else {
           sliderVal.refresh();
         }
-        sliderVal.on('slidePageChanged', ({ pageX }) => {
-          store.commit('song/SET_CURRENT_INDEX', pageX);
-          store.commit('song/SET_PLAYING_STATE', true);
-        });
         sliderVal.goToPage(currentIndex.value, 0, 0);
       }
     });
@@ -50,6 +49,13 @@ export default function useMiniSlider() {
     watch(currentIndex, (newCurrentIndex) => {
       if (sliderVal && sliderShow.value) {
         sliderVal.goToPage(newCurrentIndex, 0, 0);
+      }
+    });
+
+    watch(playList, async (newPlayList) => {
+      if (sliderVal && sliderShow.value && newPlayList.length) {
+        await nextTick();
+        sliderVal.refresh();
       }
     });
   });

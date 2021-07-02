@@ -6,7 +6,7 @@
     <h1 class="title">{{ title }}</h1>
     <div class="bg-image" :style="bgImageStyle" ref="bgImg">
       <div class="play-btn-wrapper" :style="playBtnStyle">
-        <div class="play-btn" v-show="songs.length>0" @click="random()">
+        <div class="play-btn" v-show="songs.length > 0" @click="random()">
           <i class="icon-play"></i>
           <span class="text">随机播放全部</span>
         </div>
@@ -19,134 +19,136 @@
       v-loading="loading"
       :probe-type="3"
       @scroll="onscroll"
-      v-none-data:[noResultText]="noData">
+      v-none-data:[noResultText]="noData"
+    >
       <div class="song-list-wrapper">
-        <song-list :list="songs" @select="selectItem"/>
+        <song-list :list="songs" @select="selectItem" />
       </div>
     </Scroll>
   </div>
 </template>
 
 <script>
-import Scroll from '@/components/Scroll/Scroll'
-import SongList from '@/components/SongList/SongList'
-import { useRouter } from 'vue-router'
-import { mapActions } from 'vuex'
-
-const RESERVED_HEIGHT = 40
+import Scroll from '@/components/wrap-scroll';
+import SongList from '@/components/SongList/SongList';
+import { useRouter } from 'vue-router';
+const RESERVED_HEIGHT = 40;
 
 export default {
   name: 'MusicList',
   components: {
     SongList,
-    Scroll
+    Scroll,
   },
   props: {
     songs: {
       type: Array,
-      default () {
-        return []
-      }
+      default() {
+        return [];
+      },
     },
     title: String,
     pic: String,
     loading: Boolean,
     noResultText: {
       type: String,
-      default: '抱歉，没有找到可播放的歌曲'
+      default: '抱歉，没有找到可播放的歌曲',
     },
-    rank: Boolean
+    rank: Boolean,
   },
-  data () {
+  data() {
     return {
       imageHeight: 0,
       scrollY: 0,
-      maxTranslateY: 0
-    }
+      maxTranslateY: 0,
+    };
   },
   computed: {
-    noData () {
-      return !this.loading && !this.songs.length
+    noData() {
+      return !this.loading && !this.songs.length;
     },
-    playBtnStyle () {
-      let display = ''
+    playBtnStyle() {
+      let display = '';
       if (this.scrollY >= this.maxTranslateY) {
-        display = 'none'
+        display = 'none';
       }
       return {
-        display
-      }
+        display,
+      };
     },
-    bgImageStyle () {
-      const scrollY = this.scrollY
-      let paddingTop = '70%'
-      let height = 0
-      let zIndex = 0
-      let translateZ = 0
+    bgImageStyle() {
+      const scrollY = this.scrollY;
+      let paddingTop = '70%';
+      let height = 0;
+      let zIndex = 0;
+      let translateZ = 0;
       if (scrollY > this.maxTranslateY) {
-        zIndex = 10
-        paddingTop = 0
-        height = `${RESERVED_HEIGHT}px`
-        translateZ = 1
+        zIndex = 10;
+        paddingTop = 0;
+        height = `${RESERVED_HEIGHT}px`;
+        translateZ = 1;
       }
-      let scale = 1
+      let scale = 1;
       if (scrollY < 0) {
-        scale = 1 + Math.abs(scrollY / this.imageHeight)
+        scale = 1 + Math.abs(scrollY / this.imageHeight);
       }
       return {
         zIndex,
         paddingTop,
         height,
         transform: `scale(${scale}) translateZ(${translateZ}px)`,
-        backgroundImage: `url(${this.pic})`
-      }
+        backgroundImage: `url(${this.pic})`,
+      };
     },
-    scrollStyle () {
+    scrollStyle() {
+      const bottom = this.$store.state.song.playList.length ? '60px' : 0;
       return {
-        top: `${this.imageHeight}px`
-      }
+        top: `${this.imageHeight}px`,
+        bottom,
+      };
     },
-    filterStyle () {
-      let blur = 0
-      const scrollY = this.scrollY
-      const imageHeight = this.imageHeight
+    filterStyle() {
+      let blur = 0;
+      const scrollY = this.scrollY;
+      const imageHeight = this.imageHeight;
       if (scrollY >= 0) {
-        blur = Math.min(this.maxTranslateY / imageHeight, scrollY / imageHeight) * 20
+        blur =
+          Math.min(this.maxTranslateY / imageHeight, scrollY / imageHeight) *
+          20;
       }
       return {
-        backdropFilter: `blur(${blur}px)`
-      }
-    }
+        backdropFilter: `blur(${blur}px)`,
+      };
+    },
   },
-  setup () {
-    const router = useRouter()
+  setup() {
+    const router = useRouter();
     const goBack = () => {
-      router.back()
-    }
+      router.back();
+    };
     return {
-      goBack
-    }
+      goBack,
+    };
   },
   methods: {
-    ...mapActions(['song/selectPlay', 'song/randomPlay']),
-    selectItem (item, index) {
-      this['song/selectPlay']({
+    selectItem(item, index) {
+      this.$store.dispatch('song/selectPlay', {
         list: this.songs,
-        index: index
-      })
+        index: index,
+      });
     },
-    onscroll (pos) {
-      this.scrollY = -pos.y
+    onscroll(pos) {
+      this.scrollY = -pos.y;
     },
-    random () {
-      this['song/randomPlay']({ list: this.songs })
-    }
+    random() {
+      this.$store.dispatch('song/randomPlay', { list: this.songs });
+    },
   },
-  mounted () {
-    this.imageHeight = this.$refs.bgImg.clientHeight
-    this.maxTranslateY = this.imageHeight - RESERVED_HEIGHT
-  }
-}
+  mounted() {
+    this.imageHeight = this.$refs.bgImg.clientHeight;
+    this.maxTranslateY = this.imageHeight - RESERVED_HEIGHT;
+  },
+};
 </script>
 
 <style scoped lang="scss">
@@ -165,7 +167,7 @@ export default {
       display: block;
       padding: 10px;
       font-size: $font-size-large-x;
-      color: $color-theme
+      color: $color-theme;
     }
   }
 

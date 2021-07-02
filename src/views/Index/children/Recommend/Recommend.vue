@@ -1,6 +1,6 @@
 <template>
   <div class="recommend" v-loading:[title]="loading">
-    <Scroll class="recommend-content" >
+    <Scroll class="recommend-content">
       <div>
         <div class="slider-wrapper">
           <div class="slider-content">
@@ -10,9 +10,9 @@
         <div class="home-list" v-if="albums.length">
           <h1 class="list-title">热门歌单推荐</h1>
           <ul>
-            <li class="item" v-for="(item,index) in albums" :key="index">
+            <li class="item" v-for="(item, index) in albums" :key="index">
               <div class="icon">
-                <img width="60" height="60" v-lazy="item.pic"/>
+                <img width="60" height="60" v-lazy="item.pic" />
               </div>
               <div class="text">
                 <h2 class="name">{{ item.username }}</h2>
@@ -24,46 +24,45 @@
       </div>
     </Scroll>
   </div>
-
 </template>
 
 <script lang="ts">
-import { defineComponent } from 'vue'
-import { FetchRecommend } from '@/api/index'
-import Slider from '@/components/Slider/Slider.vue'
-import Scroll from '@/components/Scroll/Scroll.vue'
+import { defineComponent } from 'vue';
+import { FetchRecommend } from '@/api/index';
+import Slider from '@/components/Slider/Slider.vue';
+import Scroll from '@/components/wrap-scroll';
 
 export default defineComponent({
   name: 'Recommend',
   components: { Scroll, Slider },
-  data () {
+  data() {
     return {
       sliders: [],
       albums: [],
-      title: '正在加载...'
-    }
+      title: '正在加载...',
+    };
   },
   computed: {
-    loading () {
-      return !this.sliders.length && !this.albums.length
-    }
+    loading() {
+      return !this.sliders.length && !this.albums.length;
+    },
   },
   methods: {
-    async init () {
-      const res = await FetchRecommend()
-      this.sliders = res.sliders
-      this.albums = res.albums
+    async init() {
+      const res = await FetchRecommend();
+      this.sliders = res.sliders;
+      this.albums = res.albums;
     },
-    show () {
-      console.log(this)
-      console.log(this.loading)
-      this.loading.show()
-    }
+    show() {
+      console.log(this);
+      console.log(this.loading);
+      this.loading.show();
+    },
   },
-  created () {
-    this.init()
-  }
-})
+  created() {
+    this.init();
+  },
+});
 </script>
 <style scoped lang="scss">
 .recommend {
@@ -99,7 +98,7 @@ export default defineComponent({
         line-height: 65px;
         text-align: center;
         font-size: $font-size-medium;
-        color: $color-theme
+        color: $color-theme;
       }
 
       .item {
@@ -130,13 +129,10 @@ export default defineComponent({
         }
 
         .title {
-          color: $color-text-d
+          color: $color-text-d;
         }
       }
-    ;
     }
   }
-
 }
-
 </style>
