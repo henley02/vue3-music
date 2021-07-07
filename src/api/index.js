@@ -15,3 +15,5 @@ export const FetchLyric = (params) => {
     return lyric;
   });
 };
+
+export const FetchAlbum = (params) => get('/api/getAlbum', params);

@@ -10,7 +10,12 @@
         <div class="home-list" v-if="albums.length">
           <h1 class="list-title">热门歌单推荐</h1>
           <ul>
-            <li class="item" v-for="(item, index) in albums" :key="index">
+            <li
+              class="item"
+              v-for="(item, index) in albums"
+              :key="index"
+              @click="handleClick(item)"
+            >
               <div class="icon">
                 <img width="60" height="60" v-lazy="item.pic" />
               </div>
@@ -48,14 +53,16 @@ export default defineComponent({
     },
   },
   methods: {
+    handleClick(item) {
+      this.$store.commit('album/SET_CURRENT_ALBUM', item);
+      this.$router.push({ name: 'AlbumDetail', params: { id: item.id } });
+    },
     async init() {
       const res = await FetchRecommend();
       this.sliders = res.sliders;
       this.albums = res.albums;
     },
     show() {
-      console.log(this);
-      console.log(this.loading);
       this.loading.show();
     },
   },
