@@ -1,8 +1,13 @@
 <template>
   <div class="song-list">
-    <li class="item" v-for="(item,index) in list" :key="index" @click="handleClick(item,index)">
+    <li
+      class="item"
+      v-for="(item, index) in list"
+      :key="index"
+      @click="handleClick(item, index)"
+    >
       <div class="rank" v-if="rank">
-        <span></span>
+        <span :class="getRankCls(index)">{{ getRankText(index) }}</span>
       </div>
       <div class="content">
         <h2 class="name">{{ item.name }}</h2>
@@ -18,23 +23,35 @@ export default {
   props: {
     list: {
       type: Array,
-      default: () => []
+      default: () => [],
     },
     rank: {
       type: Boolean,
-      default: false
-    }
+      default: false,
+    },
   },
   emits: ['select'],
   methods: {
-    getDesc (item) {
-      return `${item.singer}·${item.album}`
+    getRankText(index) {
+      if (index > 2) {
+        return index + 1;
+      }
     },
-    handleClick (song, index) {
-      this.$emit('select', song, index)
-    }
-  }
-}
+    getRankCls(index) {
+      if (index <= 2) {
+        return `icon icon${index}`;
+      } else {
+        return 'text';
+      }
+    },
+    getDesc(item) {
+      return `${item.singer}·${item.album}`;
+    },
+    handleClick(song, index) {
+      this.$emit('select', song, index);
+    },
+  },
+};
 </script>
 
 <style scoped lang="scss">
@@ -84,7 +101,7 @@ export default {
 
       .name {
         @include no-wrap();
-        color: $color-text
+        color: $color-text;
       }
 
       .desc {

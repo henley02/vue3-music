@@ -51,6 +51,14 @@ const routes = [
     component: () => import('../views/AlbumDetail/AlbumDetail.vue'),
   },
   {
+    path: '/rankingDetail/:id',
+    name: 'RankingDetail',
+    meta: {
+      title: '排行榜详情',
+    },
+    component: () => import('../views/RankingDetail/RankingDetail.vue'),
+  },
+  {
     path: '/user',
     name: 'User',
     component: () => import('../views/User/User.vue'),

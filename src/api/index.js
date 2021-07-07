@@ -17,3 +17,15 @@ export const FetchLyric = (params) => {
 };
 
 export const FetchAlbum = (params) => get('/api/getAlbum', params);
+
+/**
+ * 排行榜列表
+ * @param params
+ */
+export const FetchRankingList = (params) => get('/api/getTopList', params);
+
+/**
+ * 排行榜详情
+ * @param params
+ */
+export const FetchRankingDetail = (params) => get('/api/getTopDetail', params);
