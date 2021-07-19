@@ -1,0 +1,70 @@
+<template>
+  <div class="search-list">
+    <transition-group name="list" tag="ul">
+      <li
+        class="search-item"
+        v-for="item in list"
+        :key="item"
+        @click="selectItem(item)"
+      >
+        <span class="text">{{ item }}</span>
+        <span class="icon" @click.stop="deleteItem(item)">
+          <i class="icon-delete"></i>
+        </span>
+      </li>
+    </transition-group>
+  </div>
+</template>
+
+<script lang="ts">
+import { defineComponent } from 'vue';
+
+export default defineComponent({
+  name: 'SearchList',
+  props: {
+    list: {
+      type: Array,
+      default: () => [],
+    },
+  },
+  emits: ['select', 'delete'],
+  setup(props, { emit }) {
+    function selectItem(item) {
+      emit('select', item);
+    }
+
+    function deleteItem(item) {
+      emit('delete', item);
+    }
+
+    return {
+      deleteItem,
+      selectItem,
+    };
+  },
+});
+</script>
+<style scoped lang="scss">
+.search-list {
+  .search-item {
+    display: flex;
+    align-items: center;
+    height: 40px;
+    overflow: hidden;
+
+    .text {
+      flex: 1;
+      color: $color-text-l;
+    }
+
+    .icon {
+      @include extend-click();
+
+      .icon-delete {
+        font-size: $font-size-small;
+        color: $color-text-d;
+      }
+    }
+  }
+}
+</style>

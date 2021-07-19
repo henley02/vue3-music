@@ -121,6 +121,27 @@ const actions = {
     commit('SET_PLAY_LIST', []);
     commit('SET_PLAYING_STATE', false);
   },
+  addSong({ commit, state }, song) {
+    const sequenceList = state.sequenceList.slice();
+    const playList = state.playList.slice();
+    let currentIndex = state.currentIndex;
+    const playIndex = findIndex(playList, song);
+    if (playIndex > -1) {
+      currentIndex = playIndex;
+    } else {
+      playList.push(song);
+      currentIndex = playList.length - 1;
+    }
+    const sequenceIndex = findIndex(sequenceList, song);
+    if (sequenceIndex === -1) {
+      sequenceList.push(song);
+    }
+    commit('SET_SEQUENCE_LIST', sequenceList);
+    commit('SET_PLAY_LIST', playList);
+    commit('SET_CURRENT_INDEX', currentIndex);
+    commit('SET_PLAYING_STATE', true);
+    commit('SET_FULL_SCREEN', true);
+  },
 };
 
 function findIndex(list, song) {

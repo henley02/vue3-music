@@ -6,6 +6,8 @@ export const ALBUM_KEY = '__album__';
 
 export const RANKING_KEY = '__ranking__';
 
+export const SEARCH_KEY = '__search__';
+
 /**
  * 播放模式
  * @type {{sequence: number, loop: number, random: number}}
