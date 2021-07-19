@@ -36,7 +36,7 @@
             </transition-group>
           </scroll>
           <div class="list-add">
-            <div class="add">
+            <div class="add" @click="showAddSong()">
               <i class="icon-add"></i>
               <span class="text">添加歌曲到队列</span>
             </div>
@@ -45,6 +45,7 @@
             <span>关闭</span>
           </div>
         </div>
+        <add-song ref="addSongRef" />
       </div>
     </transition>
   </teleport>
@@ -63,16 +64,18 @@ import { useStore } from 'vuex';
 import Scroll from '../Scroll/Scroll.vue';
 import useMode from './use-mode';
 import useFavorite from './use-favorite';
+import AddSong from '../AddSong/AddSong.vue';
 
 export default defineComponent({
   name: 'play-list',
-  components: { Scroll },
+  components: { AddSong, Scroll },
   setup() {
     const { proxy } = getCurrentInstance();
     const visible = ref(false);
     const removing = ref(false);
     const scrollRef = ref(null);
     const listRef = ref(null);
+    const addSongRef = ref(null);
 
     const store = useStore();
     const sequenceList = computed(() => store.state.song.sequenceList);
@@ -150,6 +153,10 @@ export default defineComponent({
       }, 300);
     }
 
+    function showAddSong() {
+      addSongRef.value.show();
+    }
+
     return {
       visible,
       show,
@@ -161,6 +168,8 @@ export default defineComponent({
       removeSong,
       removing,
       clearAll,
+      addSongRef,
+      showAddSong,
 
       // store
       sequenceList,

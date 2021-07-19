@@ -5,9 +5,10 @@
 </template>
 
 <script>
-import { FetchSingerDetail, FetchSongsUrl } from '@/api/index';
+import { FetchSingerDetail } from '@/api/index';
 import MusicList from '@/components/MusicList/MusicList';
 import { useStore } from 'vuex';
+import { processSongs } from '@/service/song';
 
 export default {
   name: 'SingerDetail',
@@ -23,18 +24,8 @@ export default {
   methods: {
     async init() {
       const res = await FetchSingerDetail({ mid: this.$route.params.mid });
-      let mid = [];
-      if (res.songs.length) {
-        mid = res.songs.map((item) => item.mid);
-
-        const { map } = await FetchSongsUrl({ mid: mid });
-        res.songs.forEach((item) => {
-          item.url = map[item.mid];
-        });
-      }
-
+      this.songs = await processSongs(res.songs);
       this.loading = false;
-      this.songs = res.songs.filter((item) => item.url.indexOf('vkey') > -1);
     },
   },
   setup() {

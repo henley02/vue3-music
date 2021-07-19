@@ -3,6 +3,7 @@ const getters = {
   currentAlbum: (state) => state.album.currentAlbum,
   currentSinger: (state) => state.singer.currentSinger,
   currentSong: (state) => state.song.playList[state.song.currentIndex] || {},
+  searchHistory: (state) => state.searchHistory.list || [],
 };
 
 export default getters;

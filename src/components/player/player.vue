@@ -122,6 +122,7 @@ import useMode from './use-mode';
 import useFavorite from './use-favorite';
 import useCd from './use-cd';
 import useLyric from './use-lyric';
+import usePlayHistory from './use-play-history';
 import useMiddleInteractive from './use-middle-interactive';
 import { PLAY_MODE } from '@/js/constant';
 import { formatTime } from '@/js/util';
@@ -151,6 +152,8 @@ export default defineComponent({
     const { modeIcon, changeMode } = useMode();
     const { toggleFavorite, getFavoriteIcon } = useFavorite();
     const { cdCls, cdRef, cdImageRef } = useCd();
+    const { savePlay } = usePlayHistory();
+
     const {
       currentLineNum,
       currentLyric,
@@ -248,6 +251,7 @@ export default defineComponent({
       if (songReady.value) return;
       songReady.value = true;
       playLyric();
+      savePlay(currentSong.value);
     }
 
     /**
@@ -659,12 +663,15 @@ export default defineComponent({
         transition: all 0.6s cubic-bezier(0.45, 0, 0.55, 1);
       }
     }
+
     &.normal-enter-from,
     &.normal-leave-to {
       opacity: 0;
+
       .top {
         transform: translate3d(0, -100px, 0);
       }
+
       .bottom {
         transform: translate3d(0, 100px, 0);
       }

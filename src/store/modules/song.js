@@ -1,4 +1,4 @@
-import { PLAY_MODE, FAVORITE_KEY } from '@/js/constant';
+import { PLAY_MODE, FAVORITE_KEY, PLAY_KEY } from '@/js/constant';
 import { shuffle } from '@/js/util';
 import { load } from '@/js/array-store';
 
@@ -31,6 +31,8 @@ const state = {
    * 收藏列表
    */
   favoriteList: load(FAVORITE_KEY),
+
+  playHistory: load(PLAY_KEY),
 };
 
 const mutations = {
@@ -62,6 +64,9 @@ const mutations = {
       }
       return item;
     });
+  },
+  SET_PLAY_HISTORY(state, songs) {
+    state.playHistory = songs;
   },
 };
 
@@ -120,6 +125,27 @@ const actions = {
     commit('SET_CURRENT_INDEX', 0);
     commit('SET_PLAY_LIST', []);
     commit('SET_PLAYING_STATE', false);
+  },
+  addSong({ commit, state }, song) {
+    const sequenceList = state.sequenceList.slice();
+    const playList = state.playList.slice();
+    let currentIndex = state.currentIndex;
+    const playIndex = findIndex(playList, song);
+    if (playIndex > -1) {
+      currentIndex = playIndex;
+    } else {
+      playList.push(song);
+      currentIndex = playList.length - 1;
+    }
+    const sequenceIndex = findIndex(sequenceList, song);
+    if (sequenceIndex === -1) {
+      sequenceList.push(song);
+    }
+    commit('SET_SEQUENCE_LIST', sequenceList);
+    commit('SET_PLAY_LIST', playList);
+    commit('SET_CURRENT_INDEX', currentIndex);
+    commit('SET_PLAYING_STATE', true);
+    commit('SET_FULL_SCREEN', true);
   },
 };
 

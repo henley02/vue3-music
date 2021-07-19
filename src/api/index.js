@@ -29,3 +29,15 @@ export const FetchRankingList = (params) => get('/api/getTopList', params);
  * @param params
  */
 export const FetchRankingDetail = (params) => get('/api/getTopDetail', params);
+
+/**
+ * 热门搜索列表
+ * @param params
+ */
+export const FetchHotKeys = (params) => get('/api/getHotKeys', params);
+
+/**
+ * 搜索
+ * @param params
+ */
+export const Search = (params) => get('/api/search', params);
