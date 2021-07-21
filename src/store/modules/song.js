@@ -1,6 +1,5 @@
-import { PLAY_MODE, FAVORITE_KEY, PLAY_KEY } from '@/js/constant';
+import { PLAY_MODE } from '@/js/constant';
 import { shuffle } from '@/js/util';
-import { load } from '@/js/array-store';
 
 const state = {
   /**
@@ -30,9 +29,9 @@ const state = {
   /**
    * 收藏列表
    */
-  favoriteList: load(FAVORITE_KEY),
+  favoriteList: [],
 
-  playHistory: load(PLAY_KEY),
+  playHistory: [],
 };
 
 const mutations = {

@@ -4,7 +4,9 @@ const routes = [
   {
     path: '/',
     name: 'Index',
-    component: () => import('../views/Index/Index.vue'),
+    components: {
+      index: () => import('../views/Index/Index.vue'),
+    },
     redirect: 'recommend',
     children: [
       {
