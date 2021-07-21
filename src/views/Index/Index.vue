@@ -2,7 +2,11 @@
   <div>
     <m-header />
     <Tab />
-    <router-view :style="viewStyle" />
+    <router-view v-slot="{ Component }" :style="viewStyle">
+      <keep-alive>
+        <component :is="Component" />
+      </keep-alive>
+    </router-view>
   </div>
 </template>
 

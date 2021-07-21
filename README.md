@@ -13,6 +13,7 @@ yarn serve
 ### Compiles and minifies for production
 ```
 yarn build
+yarn build --report
 ```
 
 ### Lints and fixes files
